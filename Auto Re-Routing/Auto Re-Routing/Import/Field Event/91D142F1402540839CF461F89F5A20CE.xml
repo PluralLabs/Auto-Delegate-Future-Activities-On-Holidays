@@ -1,0 +1,12 @@
+﻿<AML>
+ <Item type="Field Event" id="91D142F1402540839CF461F89F5A20CE" action="add">
+  <field_event>onclick</field_event>
+  <related_id keyed_name="em_assign_routingOn_OkClick" type="Method">
+   <Item type="Method" action="get" select="id">
+    <name>em_assign_routingOn_OkClick</name>
+   </Item>
+  </related_id>
+  <sort_order>128</sort_order>
+  <source_id keyed_name="html1" type="Field">0E922AB7EC55470EB4EA0010CE38E27E</source_id>
+ </Item>
+</AML>

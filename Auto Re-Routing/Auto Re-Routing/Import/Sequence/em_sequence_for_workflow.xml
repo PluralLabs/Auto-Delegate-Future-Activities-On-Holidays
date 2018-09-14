@@ -1,0 +1,6 @@
+﻿<AML>
+ <Item type="Sequence" id="0DE06DE1F9E5430B911E356CEDB2D51C" action="add">
+  <initial_value>0</initial_value>
+  <name>em_sequence_for_workflow</name>
+ </Item>
+</AML>

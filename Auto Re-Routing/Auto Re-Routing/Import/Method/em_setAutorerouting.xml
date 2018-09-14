@@ -1,0 +1,44 @@
+﻿<AML>
+ <Item type="Method" id="BEB16D38E4C3423FA719CED1D1E3EAD0" action="add">
+  <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
+  <method_code><![CDATA[var inno = top.aras.newIOMInnovator();
+
+ var formID = top.aras.getFormId("em_global_config");
+    var param = new Object();
+    param.title  = "Set AutoRerouting";
+    //Creating Temp object for proper handle on form
+    var tmp = inno.newItem("tmp", "tmp");
+    var tmpItemId = inno.getNewID();
+    var itmType = "em_global_config";
+    
+    tmp.loadAML("<Item type='"+itmType+"' action='add' id='"+tmpItemId+"'/>");
+    tmp = tmp.apply();
+    if(tmp.isError()) {return top.aras.AlertError(tmp.getErrorString());}
+    //Global Update Form
+    param.formId = formID; 
+    param.aras   = top.aras; 
+    param.main   = top.main;
+    param.item   = tmp;
+    // passing the itemtype and selected ids across forms
+    param.selectedItemtype = itmType;
+    param.content = 'ShowFormAsADialog.html';
+    param.dialogWidth = 500;
+    param.dialogHeight = 270;
+    param.status = 0;
+    param.help = 0;
+    param.resizable = 1;
+    param.scroll = 0;
+    
+    var win = aras.getMostTopWindowWithAras(window);
+    (win.main || win).ArasModules.Dialog.show('iframe', param).promise.then(
+    function(res){
+    
+    // Delete the tmp item created above not required any more
+    var tmpId = tmp.getProperty("id");
+    top.aras.deleteItem(itmType, tmpId, true);
+
+});]]></method_code>
+  <method_type>JavaScript</method_type>
+  <name>em_setAutorerouting</name>
+ </Item>
+</AML>

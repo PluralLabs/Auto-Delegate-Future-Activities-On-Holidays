@@ -1,0 +1,72 @@
+﻿<AML>
+ <Item type="Method" id="C7F0CDB73B614A918C5A9FFE4E5FC0F8" action="add">
+  <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
+  <method_code><![CDATA[/*
+Created by Poonam Shendge 
+Created on Date : 24/8/2018
+to manage assignment routing of user vaccations
+*/
+var inno = top.aras.newIOMInnovator();
+var auto_assign_user_keyedname = document.thisItem.getProperty("em_user");
+var auto_assign_status = document.thisItem.getProperty("em_glob_rerouting_status");
+
+//validation to check if any form fields are empty 
+if((auto_assign_user_keyedname === undefined)|(auto_assign_status === undefined))
+{
+    alert("One of the above field is Empty ");
+	return;
+}
+var currUserId1 = inno.getUserID();
+
+var contUserItem1 = inno.getItemById('User',currUserId1);
+var login = contUserItem1.getProperty('keyed_name');
+// var contUserItem1 = inno.getItemById('User',currUserId1);
+// var login = contUserItem1.getProperty('keyed_name');
+
+if(auto_assign_status=="OFF")
+{
+		//off the  Routing status and auto assigned user on user ItemType
+		var r=confirm("Routing will be Turned OFF. Do you want to continue?");
+		if (r===true)
+		  {
+		  
+			contUserItem1.setAttribute("action","edit");
+		    contUserItem1.setProperty("em_auto_routing_status",auto_assign_status);
+		    contUserItem1.setProperty("em_auto_assign_to_user","");
+		    var upResult = contUserItem1.apply();
+		    if(upResult.isError()) 
+			{return alert(upResult.getErrorString());}
+			
+			 alert("InBasket Re-routing is now OFF.");
+			 		    
+		  }
+		else
+		  {
+		  return;
+		  }
+}
+else
+{
+		//ON the  Routing status and auto assigned user on user ItemType
+		contUserItem1.setAttribute("action","edit");
+		contUserItem1.setProperty("em_auto_routing_status",auto_assign_status);
+		contUserItem1.setProperty("em_auto_assign_to_user",auto_assign_user_keyedname);
+		upResult = contUserItem1.apply();
+		if(upResult.isError()) {return alert(upResult.getErrorString());}
+		alert("InBasket Re-routing is now ON.");
+	
+}  
+//close Window	
+var frame = top.frameElement || window.parent.frameElement;
+if (frame && frame.dialogArguments && frame.dialogArguments.dialog) {
+        frame.dialogArguments.dialog.close();
+}
+else {
+        top.window.close();
+}
+	
+	]]></method_code>
+  <method_type>JavaScript</method_type>
+  <name>em_assign_routingOn_OkClick</name>
+ </Item>
+</AML>

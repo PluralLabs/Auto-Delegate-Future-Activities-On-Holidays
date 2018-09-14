@@ -1,0 +1,21 @@
+﻿<AML>
+ <Item type="Property" id="1ADC2AC9D579448EB453FBE8CAAA0699" action="add">
+  <column_alignment>left</column_alignment>
+  <data_source keyed_name="em_auto_routing_status_list">D1F9FB91947145798E7E8D961909CF7D</data_source>
+  <data_type>list</data_type>
+  <is_hidden>0</is_hidden>
+  <is_hidden2>0</is_hidden2>
+  <is_indexed>0</is_indexed>
+  <is_keyed>0</is_keyed>
+  <is_multi_valued>0</is_multi_valued>
+  <is_required>0</is_required>
+  <label xml:lang="en">Re-Routing Status</label>
+  <range_inclusive>0</range_inclusive>
+  <readonly>0</readonly>
+  <sort_order>4864</sort_order>
+  <source_id keyed_name="User" type="ItemType" name="User">45E899CD2859442982EB22BB2DF683E5</source_id>
+  <stored_length>256</stored_length>
+  <track_history>0</track_history>
+  <name>em_auto_routing_status</name>
+ </Item>
+</AML>

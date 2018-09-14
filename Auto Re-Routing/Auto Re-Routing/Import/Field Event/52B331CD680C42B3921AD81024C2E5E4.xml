@@ -1,0 +1,12 @@
+﻿<AML>
+ <Item type="Field Event" id="52B331CD680C42B3921AD81024C2E5E4" action="add">
+  <field_event>onclick</field_event>
+  <related_id keyed_name="em_closeGlobalConfig_OnCancel" type="Method">
+   <Item type="Method" action="get" select="id">
+    <name>em_closeGlobalConfig_OnCancel</name>
+   </Item>
+  </related_id>
+  <sort_order>128</sort_order>
+  <source_id keyed_name="html2" type="Field">C54B5AD0AE164722ADB2C5C7E639F254</source_id>
+ </Item>
+</AML>

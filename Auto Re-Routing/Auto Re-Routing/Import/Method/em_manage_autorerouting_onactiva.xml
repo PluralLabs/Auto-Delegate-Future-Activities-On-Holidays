@@ -1,0 +1,318 @@
+﻿<AML>
+ <Item type="Method" id="D1EE53A41E4F4D708413FE50A39D11BE" action="add">
+  <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
+  <method_code><![CDATA[/*
+Created By : Poonam Shendge
+Created On :30/08/2018
+Comment : Auto Re-route Inbasket User on Post method of Workflow process Lc State.
+*/
+
+Innovator inno = getInnovator();
+// get type 
+string type = this.getType();
+string workflowprcName = this.getProperty("name");
+
+if(type =="Activity")
+{       
+
+//get Activity Id
+string activityId = this.getID();
+// string routedUsrIdentity = "";
+string routedIdentity = "";
+string routedIdentityIds ="";
+string rerouteUserId = "";
+string identityId = "";
+string newIdentityId ="";
+string groupOfRoutedIdentity ="";
+string sequence ="";
+string groupIdentityId = "";
+bool flag = false;
+
+string is_auto = this.getProperty("is_auto");
+    if(is_auto !="1")
+    {
+        string activityAml ="<AML>"+
+                        "<Item type='Activity' action='get' select='id,name' where=\"[Activity].id='"+activityId+"'\">"+
+                          "<Relationships>"+
+        	                 "<Item type='Activity Assignment' action='get' select='related_id'>"+
+                        	 "</Item>"+
+                        "</Relationships>"+
+                      "</Item>"+
+                    "</AML>";	
+                Item activityItm = inno.applyAML(activityAml);
+                if (activityItm.isError())
+        		{
+        			throw new Exception("Error while getting Activity assignment Identity, " + activityItm.getErrorString());
+        		}
+        		string activityName = activityItm.getItemByIndex(0).getProperty("name");
+                Item activityAssignmentCollection = activityItm.getItemsByXPath("//Item[@type='Activity Assignment']");
+              
+                if(activityAssignmentCollection.getItemCount() > 0)
+                {
+                	Item identityItem = activityAssignmentCollection.getItemByIndex(0).getItemsByXPath("./related_id/Item[@type ='Identity']");
+                    identityId = identityItem.getItemByIndex(0).getProperty("id");
+                    string userAlias = identityItem.getItemByIndex(0).getProperty("is_alias");
+                    if(userAlias == "1")
+                    {
+						//Aml to get source_id from particular identityId of Identity 
+                        string aliasQry = "<AML>"+
+                                            "<Item type='Alias' action='get' select='source_id,related_id'>"+
+                                                "<related_id>"+identityId+"</related_id>"+
+                                            "</Item>"+
+                                      "</AML>";
+                        Item usrWithIdentity = inno.applyAML(aliasQry);
+                        if (usrWithIdentity.isError())
+                        {
+                          throw new Exception("Error while getting User Identity ID, " + usrWithIdentity.getErrorString());
+                        }                    
+                        string ActivityIdentity = usrWithIdentity.getItemByIndex(0).getProperty("source_id"); 
+                        //Aml to get Routed User
+                        string userAmlQry = "<AML>"+
+                                            "<Item type='User' action='get' id='"+ActivityIdentity+"' select='id,keyed_name,em_auto_routing_status,em_auto_assign_to_user'>"+
+                                             "</Item>"+
+                                        "</AML>";
+                        Item userWithRouting = inno.applyAML(userAmlQry);
+                        if (userWithRouting.isError())
+                		{
+                			throw new Exception("Error while getting Routed User , " + userWithRouting.getErrorString());
+                		}
+                		
+                		string rerouteStatus = userWithRouting.getItemByIndex(0).getProperty("em_auto_routing_status");
+                        if (rerouteStatus == "ON")
+                        {
+                             rerouteUserId = userWithRouting.getItemByIndex(0).getProperty("em_auto_assign_to_user");
+                             //Aml to get Routed users Identity Id
+                             string alisQry = "<AML>"+
+                                                 "<Item type='Alias' action='get' select='related_id'>"+
+                                                    "<source_id>"+rerouteUserId+"</source_id>"+
+                                                "</Item>"+
+                                            "</AML>";
+                              Item usrWithRoutedIdentity = inno.applyAML(alisQry);
+                              if (usrWithRoutedIdentity.isError())
+                    		  {
+                    		   	throw new Exception("Error while getting User Identity ID, " + usrWithRoutedIdentity.getErrorString());
+                    		  }
+                              routedIdentity = usrWithRoutedIdentity.getItemByIndex(0).getProperty("related_id");
+                              //Aml to merger Exsisting Assignment Identity with Routed User Identity 
+							  
+                             Item _adAssgn = inno.newItem("Activity Assignment", "merge");
+                    		_adAssgn.setAttribute("where", "source_id='" + activityId + "' and related_id='" + identityId + "'");
+            	    		_adAssgn.setProperty("source_id", activityId);
+                    		_adAssgn.setProperty("voting_weight", "100");
+                    		_adAssgn.setProperty("related_id", routedIdentity);
+                      		Item adAssgn = _adAssgn.apply();
+                    		if (adAssgn.isError())
+                    		{
+                    			throw new Exception("Error while adding new assignments, " + adAssgn.getErrorString());
+                    		}
+                        }
+                      }
+                      else
+                      {
+						  //Query to get group Identity Id.
+                           string AliasItemQuery = "<AML>"+
+                                                     "<Item type='Identity' action='get' select='id'>"+ 
+                                                       "<id>"+identityId+"</id>"+
+                                                        "<Relationships>"+
+                                                         "<Item type='Member' action='get' select='related_id'>"+
+                                                          "<related_id>"+
+                                                           "<Item type='Identity' action='get' select='id'>"+
+                                                           "</Item>"+
+                                                          "</related_id>"+
+                                                         "</Item>"+
+                                                        "</Relationships>"+
+                                                     "</Item>"+
+                                                    "</AML>";
+                            Item identityWithAlias = inno.applyAML(AliasItemQuery);
+                            Item relatedIdentityResult= identityWithAlias.getItemsByXPath("//related_id/Item[@type = 'Identity']");
+                            int identityCount = relatedIdentityResult.getItemCount();
+							
+							List<string> IdentList = new List<string>();
+							List<string> RoutedIdetityList = new List<string>();
+                            for(int j=0 ; j<identityCount ; j++)
+                            {
+                                
+                                Item itmIndex = relatedIdentityResult.getItemByIndex(j);
+                                groupIdentityId = itmIndex.getProperty("id");
+                                
+                                string aliasQry = "<AML>"+
+                                                    "<Item type='Alias' action='get' select='source_id,related_id'>"+
+                                                      "<related_id>"+groupIdentityId+"</related_id>"+
+                                                    "</Item>"+
+                                                  "</AML>";
+                                Item usrWithIdentity = inno.applyAML(aliasQry);
+                                if (usrWithIdentity.isError())
+                                {
+                                  throw new Exception("Error while getting User Identity ID, " + usrWithIdentity.getErrorString());
+                                }   
+                           
+                                string ActivityIdentity = usrWithIdentity.getItemByIndex(0).getProperty("source_id"); 
+                                //Aml to get Routed User
+                                string amlStr = "<AML>"+
+                                                    "<Item type='User' action='get' id='"+ActivityIdentity+"' select='id,keyed_name,em_auto_routing_status,em_auto_assign_to_user'>"+
+                                                     "</Item>"+
+                                                 "</AML>";
+                                Item userWithRouting = inno.applyAML(amlStr);
+                                if (userWithRouting.isError())
+                        		{
+                        			throw new Exception("Error while getting Routed User , " + userWithRouting.getErrorString());
+                    		    }
+                    		
+                        		string rerouteStatus = userWithRouting.getItemByIndex(0).getProperty("em_auto_routing_status");
+                      
+                        		if((rerouteStatus == "OFF")||(String.IsNullOrEmpty(rerouteStatus)))
+                        		{	
+							        //Query to get unrouted users from group Identity.
+							        string rerouteStatusOffId = userWithRouting.getItemByIndex(0).getProperty("id");
+                        		    string routeOfaliasQry = "<AML>"+
+																"<Item type='Alias' action='get' select='source_id,related_id'>"+
+																	"<source_id>"+rerouteStatusOffId+"</source_id>"+
+																"</Item>"+
+															 "</AML>";
+                                Item usrWithRoutingOffIdentity = inno.applyAML(routeOfaliasQry);
+                                if (usrWithRoutingOffIdentity.isError())
+                                {
+                                  throw new Exception("Error while getting User Identity ID, " + usrWithRoutingOffIdentity.getErrorString());
+                                }   
+								
+                                 //list to get all unrouted users Identity
+                                 IdentList.Add(usrWithRoutingOffIdentity.getItemByIndex(0).getProperty("related_id")); 
+                        		   
+                        		}
+                                else if (rerouteStatus == "ON")
+                                {
+                                     
+                                     rerouteUserId = userWithRouting.getItemByIndex(0).getProperty("em_auto_assign_to_user");
+                                     //Aml to get Routed users Identity Id
+                                     string alisQry = "<AML>"+
+                                                         "<Item type='Alias' action='get' select='related_id'>"+
+                                                            "<source_id>"+rerouteUserId+"</source_id>"+
+                                                        "</Item>"+
+                                                    "</AML>";
+                                      Item usrWithRoutedIdentity = inno.applyAML(alisQry);
+                                      if (usrWithRoutedIdentity.isError())
+                            		  {
+                            		   	throw new Exception("Error while getting User Identity ID, " + usrWithRoutedIdentity.getErrorString());
+                            		  }
+									//list to get all Routed users Identity
+                                    RoutedIdetityList.Add(usrWithRoutedIdentity.getItemByIndex(0).getProperty("related_id"));
+									//flag condition 
+                                    flag = true;
+                                      
+                                }
+                                
+                            }
+                           string singleRoutedidentity = "";
+                           string multipleRoutedIdentity = "";
+                              for (int l = 0; l < RoutedIdetityList.Count; l++)
+                              {
+                                      
+                                if (l == 0)
+                                {
+                                    //this will give you element at zero th index.
+                                   singleRoutedidentity = RoutedIdetityList.ElementAt(l);
+                                }
+                                else
+                                {
+                                    //values other than zero th index.
+                                    Console.WriteLine(RoutedIdetityList.ElementAt(l));
+                                    multipleRoutedIdentity = multipleRoutedIdentity + "," + RoutedIdetityList.ElementAt(l);
+                                    
+                                }
+                
+                            }
+                           //if Flag is True then create new group Identity.
+							if(flag == true)
+							{
+                                sequence =inno.getNextSequence("em_sequence_for_workflow");
+								//query to create new group Identity
+								string addIdentityAmlqry = "<AML>"+
+															 "<Item type='Member' action='add'>"+
+															   "<source_id>"+
+																 "<Item type='Identity' action='add'>"+
+																   "<name>"+activityName+"_"+sequence+"</name>"+
+																 "</Item>"+
+															   "</source_id>"+
+															   "<related_id>"+
+																 "<Item type='Identity' action='get'>"+
+																   "<id>"+singleRoutedidentity+"</id>"+
+																 "</Item>"+
+															   "</related_id>"+   
+															  "</Item>"+
+															"</AML>";
+					     		 Item addIdentityResult = inno.applyAML(addIdentityAmlqry);
+								if (addIdentityResult.isError())
+								{
+								  throw new Exception("Error while Creating new group Identity , " + addIdentityResult.getErrorString());
+								}  
+							
+								 string stringIdentity = string.Join(",", IdentList.ToArray());
+								 string newGroupIdentity = "";
+								 newGroupIdentity = stringIdentity;
+								 if(!String.IsNullOrEmpty(multipleRoutedIdentity))
+								 {
+								   newGroupIdentity = stringIdentity+multipleRoutedIdentity;
+							
+								 }
+								 
+								 string[] strNewIdentityArr = newGroupIdentity.Split(',');
+								    
+								 StringBuilder sb = new StringBuilder();
+								 
+									for (int k = 0; k < strNewIdentityArr.Length; ++k)
+									{   
+										string newIdentityList = strNewIdentityArr[k];
+										//query to add Identities to newly Created Group identity
+										sb.Append("<Item type='Member' action='add'>");
+										sb.Append("<source_id>");
+										sb.Append("<Item type='Identity' action='get'>");
+										sb.Append("<name>");
+										sb.Append(activityName+"_"+sequence);
+										sb.Append("</name>");
+										sb.Append("</Item>");
+										sb.Append("</source_id>");
+										sb.Append("<related_id>");
+										sb.Append("<Item type='Identity' action='get'>");
+										sb.Append("<id>");
+										sb.Append(newIdentityList);
+										sb.Append("</id>");
+										sb.Append("</Item>");
+										sb.Append("</related_id>");
+										sb.Append("</Item>");
+										
+								    }
+								    Item Itm = inno.applyAML("<AML>"+sb.ToString()+"</AML>");
+										if (Itm.isError())
+										{
+										  throw new Exception("Error Adding new Identity to group Identity, " + Itm.getErrorString());
+										}
+										if(Itm.getItemCount() > 0)
+										{
+										  newIdentityId = Itm.getItemByIndex(0).getProperty("source_id");
+										
+										}    
+										   //Query To merge new Identity group with previous Identity group
+											Item _adAssgn = inno.newItem("Activity Assignment", "merge");
+											_adAssgn.setAttribute("where", "source_id='" + activityId + "' and related_id='" + identityId + "'");
+											_adAssgn.setProperty("source_id", activityId);
+											_adAssgn.setProperty("voting_weight", "100");
+											_adAssgn.setProperty("related_id", newIdentityId);
+											Item adAssgn = _adAssgn.apply();
+											if (adAssgn.isError())
+											{
+												throw new Exception("Error while adding new assignments, " + adAssgn.getErrorString());
+											}
+								
+							}
+                                
+                           
+                      }
+                }   
+   
+    }
+}
+    return this;]]></method_code>
+  <method_type>C#</method_type>
+  <name>em_manage_autorerouting_onactiva</name>
+ </Item>
+</AML>

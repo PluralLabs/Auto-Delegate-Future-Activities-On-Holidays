@@ -1,0 +1,15 @@
+﻿<AML>
+ <Item type="Action" id="C52D20E733324DC784D70EB1B86B6A1E" action="add">
+  <item_query></item_query>
+  <label xml:lang="en">Set Auto Rerouting</label>
+  <location>client</location>
+  <method keyed_name="em_setAutorerouting" type="Method">
+   <Item type="Method" action="get" select="id">
+    <name>em_setAutorerouting</name>
+   </Item>
+  </method>
+  <target>none</target>
+  <type>generic</type>
+  <name>em_set_autorerouting</name>
+ </Item>
+</AML>

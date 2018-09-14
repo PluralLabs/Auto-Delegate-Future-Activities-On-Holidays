@@ -1,0 +1,21 @@
+﻿<AML>
+ <Item type="Method" id="72E739D7410E44B99E904F4E301283D1" action="add">
+  <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
+  <method_code><![CDATA[/*
+Created by Poonam Shendge : PTPL
+ Created on Date : 24/8/2018
+to update assignment routing of user on click of Remove auto routing
+*/
+
+
+var frame = top.frameElement || window.parent.frameElement;
+if (frame && frame.dialogArguments && frame.dialogArguments.dialog) {
+        frame.dialogArguments.dialog.close();
+}
+else {
+        top.window.close();
+}]]></method_code>
+  <method_type>JavaScript</method_type>
+  <name>em_closeGlobalConfig_OnCancel</name>
+ </Item>
+</AML>
