@@ -1,9 +1,9 @@
 ﻿<AML>
- <Item type="Field Event" id="91D142F1402540839CF461F89F5A20CE" action="add">
+ <Item type="Field Event" id="B545F035CFBC4151949CED5721768471" action="add">
   <field_event>onclick</field_event>
-  <related_id keyed_name="em_assign_routingOn_OkClick" type="Method">
+  <related_id keyed_name="em_set_DelgationOn_OkClick" type="Method">
    <Item type="Method" action="get" select="id">
-    <name>em_assign_routingOn_OkClick</name>
+    <name>em_set_DelgationOn_OkClick</name>
    </Item>
   </related_id>
   <sort_order>128</sort_order>

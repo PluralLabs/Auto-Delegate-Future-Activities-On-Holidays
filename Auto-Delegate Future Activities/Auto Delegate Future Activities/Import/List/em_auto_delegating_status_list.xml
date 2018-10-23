@@ -1,17 +1,17 @@
 ﻿<AML>
  <Item type="List" id="D1F9FB91947145798E7E8D961909CF7D" action="add">
-  <name>em_auto_routing_status_list</name>
+  <name>em_auto_delegating_status_list</name>
   <Relationships>
    <Item type="Value" id="59A8778EE62A475F9F00117E196157C5" action="add">
     <label xml:lang="en">ON</label>
     <sort_order>128</sort_order>
-    <source_id keyed_name="em_auto_routing_status_list" type="List">D1F9FB91947145798E7E8D961909CF7D</source_id>
+    <source_id keyed_name="em_auto_delegating_status_list" type="List">D1F9FB91947145798E7E8D961909CF7D</source_id>
     <value>ON</value>
    </Item>
    <Item type="Value" id="F34DC71FFBC7484AA8B5BD9BADA0ED99" action="add">
     <label xml:lang="en">OFF</label>
     <sort_order>256</sort_order>
-    <source_id keyed_name="em_auto_routing_status_list" type="List">D1F9FB91947145798E7E8D961909CF7D</source_id>
+    <source_id keyed_name="em_auto_delegating_status_list" type="List">D1F9FB91947145798E7E8D961909CF7D</source_id>
     <value>OFF</value>
    </Item>
   </Relationships>

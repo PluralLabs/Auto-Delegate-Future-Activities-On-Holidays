@@ -1,20 +1,21 @@
 ﻿<AML>
- <Item type="Property" id="E322B9219485445A8F66429968690FAE" action="add">
+ <Item type="Property" id="1ADC2AC9D579448EB453FBE8CAAA0699" action="add">
   <column_alignment>left</column_alignment>
-  <data_source keyed_name="User" type="ItemType" name="User">45E899CD2859442982EB22BB2DF683E5</data_source>
-  <data_type>item</data_type>
+  <data_source keyed_name="em_auto_delegating_status_list">D1F9FB91947145798E7E8D961909CF7D</data_source>
+  <data_type>list</data_type>
   <is_hidden>0</is_hidden>
   <is_hidden2>0</is_hidden2>
   <is_indexed>0</is_indexed>
   <is_keyed>0</is_keyed>
   <is_multi_valued>0</is_multi_valued>
   <is_required>0</is_required>
-  <label xml:lang="en">Auto Assign To</label>
+  <label xml:lang="en">Delegation Status</label>
   <range_inclusive>0</range_inclusive>
   <readonly>0</readonly>
-  <sort_order>4992</sort_order>
+  <sort_order>4864</sort_order>
   <source_id keyed_name="User" type="ItemType" name="User">45E899CD2859442982EB22BB2DF683E5</source_id>
+  <stored_length>256</stored_length>
   <track_history>0</track_history>
-  <name>em_auto_assign_to_user</name>
+  <name>em_delgation_status</name>
  </Item>
 </AML>

@@ -20,7 +20,7 @@
   <Relationships>
    <Item type="Property" id="ABD031D91CED423183F5D0C6E676AB68" action="add">
     <column_alignment>left</column_alignment>
-    <data_source keyed_name="em_auto_routing_status_list">D1F9FB91947145798E7E8D961909CF7D</data_source>
+    <data_source keyed_name="em_auto_delegating_status_list">D1F9FB91947145798E7E8D961909CF7D</data_source>
     <data_type>list</data_type>
     <is_hidden>0</is_hidden>
     <is_hidden2>0</is_hidden2>
@@ -28,14 +28,14 @@
     <is_keyed>0</is_keyed>
     <is_multi_valued>0</is_multi_valued>
     <is_required>0</is_required>
-    <label xml:lang="en">Re-Routing Status</label>
+    <label xml:lang="en">em_glob_delgation_status</label>
     <range_inclusive>0</range_inclusive>
     <readonly>0</readonly>
     <sort_order>3072</sort_order>
     <source_id keyed_name="em_global_config" type="ItemType" name="em_global_config">5074091D84594FD1A5572205850099AC</source_id>
     <stored_length>256</stored_length>
     <track_history>0</track_history>
-    <name>em_glob_rerouting_status</name>
+    <name>em_glob_delgation_status</name>
    </Item>
    <Item type="Property" id="1B66B9381C104D0F917BA6AC3AB7B697" action="add">
     <column_alignment>left</column_alignment>

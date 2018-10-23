@@ -1,3 +1,0 @@
-<imports>
-  <package name="Auto Re-Routing" path="Auto Re-Routing\Import" />
-</imports>

@@ -2,9 +2,9 @@
  <Item type="Life Cycle Transition" id="466A69CA95004C05AE5EA6DC40E41348" action="add">
   <from_state keyed_name="Pending" type="Life Cycle State">E1873699A2DA4E709A8C91501449B623</from_state>
   <get_comment>0</get_comment>
-  <post_action keyed_name="em_manage_autorerouting_onactiva" type="Method">
+  <post_action keyed_name="em_manage_delegation_onactivate" type="Method">
    <Item type="Method" action="get" select="id">
-    <name>em_manage_autorerouting_onactiva</name>
+    <name>em_manage_delegation_onactivate</name>
    </Item>
   </post_action>
   <role keyed_name="World" type="Identity">
@@ -12,7 +12,7 @@
     <name>World</name>
    </Item>
   </role>
-  <segments></segments>
+  <segments />
   <sort_order>128</sort_order>
   <source_id keyed_name="Workflow Process" type="Life Cycle Map">BD1529204922428C997E86B3BDEA4646</source_id>
   <to_state keyed_name="Active" type="Life Cycle State">EACB6244391B461EBCAF7D91E28BDFCF</to_state>

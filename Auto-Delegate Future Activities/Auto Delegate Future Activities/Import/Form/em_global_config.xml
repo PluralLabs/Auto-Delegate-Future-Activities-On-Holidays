@@ -13,6 +13,7 @@
     <Relationships>
      <Item type="Field" id="3951BEC428ED4408B54FF1B2E5B00331" action="add">
       <border_width>0</border_width>
+      <display_length>100</display_length>
       <display_length_unit>px</display_length_unit>
       <field_type>dropdown</field_type>
       <font_color>#000000</font_color>
@@ -21,16 +22,16 @@
       <font_weight>bold</font_weight>
       <is_disabled>0</is_disabled>
       <is_visible>1</is_visible>
-      <label xml:lang="en">Re-Routing Status</label>
+      <label xml:lang="en">Delegation Status</label>
       <label_position>top</label_position>
       <list_no_blank>0</list_no_blank>
-      <propertytype_id keyed_name="em_glob_rerouting_status" type="Property">ABD031D91CED423183F5D0C6E676AB68</propertytype_id>
+      <propertytype_id keyed_name="em_glob_delgation_status" type="Property">ABD031D91CED423183F5D0C6E676AB68</propertytype_id>
       <sort_order>128</sort_order>
       <source_id keyed_name="2B3FA3C092004177BD5B2F7CFFE2520F" type="Body">2B3FA3C092004177BD5B2F7CFFE2520F</source_id>
       <tab_index>3072</tab_index>
       <tab_stop>1</tab_stop>
-      <x>142</x>
-      <y>58</y>
+      <x>80</x>
+      <y>60</y>
       <name>em_glob_rerouting_status</name>
      </Item>
      <Item type="Field" id="55C5484AA052499891221EC605DA1EFB" action="add">
@@ -43,7 +44,7 @@
       <font_weight>bold</font_weight>
       <is_disabled>0</is_disabled>
       <is_visible>1</is_visible>
-      <label xml:lang="en">Auto Assign To</label>
+      <label xml:lang="en">Delegate To</label>
       <label_position>top</label_position>
       <list_no_blank>0</list_no_blank>
       <propertytype_id keyed_name="em_user" type="Property">1B66B9381C104D0F917BA6AC3AB7B697</propertytype_id>
@@ -51,8 +52,8 @@
       <source_id keyed_name="2B3FA3C092004177BD5B2F7CFFE2520F" type="Body">2B3FA3C092004177BD5B2F7CFFE2520F</source_id>
       <tab_index>3200</tab_index>
       <tab_stop>1</tab_stop>
-      <x>263</x>
-      <y>59</y>
+      <x>260</x>
+      <y>60</y>
       <name>em_user</name>
      </Item>
      <Item type="Field" id="0E922AB7EC55470EB4EA0010CE38E27E" action="add">
@@ -71,15 +72,16 @@
       <sort_order>512</sort_order>
       <source_id keyed_name="2B3FA3C092004177BD5B2F7CFFE2520F" type="Body">2B3FA3C092004177BD5B2F7CFFE2520F</source_id>
       <tab_stop>1</tab_stop>
-      <x>153</x>
-      <y>155</y>
+      <text_align>center</text_align>
+      <x>90</x>
+      <y>130</y>
       <name>html1</name>
       <Relationships>
-       <Item type="Field Event" id="91D142F1402540839CF461F89F5A20CE" action="add">
+       <Item type="Field Event" id="B545F035CFBC4151949CED5721768471" action="add">
         <field_event>onclick</field_event>
-        <related_id keyed_name="em_assign_routingOn_OkClick" type="Method">
+        <related_id keyed_name="em_set_DelgationOn_OkClick" type="Method">
          <Item type="Method" action="get" select="id">
-          <name>em_assign_routingOn_OkClick</name>
+          <name>em_set_DelgationOn_OkClick</name>
          </Item>
         </related_id>
         <sort_order>128</sort_order>
@@ -103,8 +105,9 @@
       <sort_order>640</sort_order>
       <source_id keyed_name="2B3FA3C092004177BD5B2F7CFFE2520F" type="Body">2B3FA3C092004177BD5B2F7CFFE2520F</source_id>
       <tab_stop>1</tab_stop>
+      <text_align>center</text_align>
       <x>288</x>
-      <y>154</y>
+      <y>130</y>
       <name>html2</name>
       <Relationships>
        <Item type="Field Event" id="52B331CD680C42B3921AD81024C2E5E4" action="add">
@@ -118,27 +121,6 @@
         <source_id keyed_name="html2" type="Field">C54B5AD0AE164722ADB2C5C7E639F254</source_id>
        </Item>
       </Relationships>
-     </Item>
-     <Item type="Field" id="69DEC6E372AE4192A119561798E6F413" action="add">
-      <display_length_unit>px</display_length_unit>
-      <field_type>html</field_type>
-      <html_code><![CDATA[<span id='ITEM_INFO_INTERNAL_SPAN'/>
-<script>
-  populate_ITEM_INFO_INTERNAL_SPAN = function()
-  {
-    document.getElementById('ITEM_INFO_INTERNAL_SPAN').innerHTML = aras.uiGetItemInfoTable(document.itemType);
-  }
-  window.addEventListener('load', populate_ITEM_INFO_INTERNAL_SPAN);
-</script>]]></html_code>
-      <is_disabled>0</is_disabled>
-      <is_visible>1</is_visible>
-      <list_no_blank>0</list_no_blank>
-      <sort_order>384</sort_order>
-      <source_id keyed_name="2B3FA3C092004177BD5B2F7CFFE2520F" type="Body">2B3FA3C092004177BD5B2F7CFFE2520F</source_id>
-      <tab_stop>0</tab_stop>
-      <x>0</x>
-      <y>0</y>
-      <name>item_info</name>
      </Item>
     </Relationships>
    </Item>

@@ -1,0 +1,366 @@
+﻿<AML>
+ <Item type="Method" id="697FBFA08C824B778C3D6BFA157F24AA" action="add">
+  <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
+  <method_code><![CDATA[/*
+Summary
+--------------------------------------------------------------------------------------------------------------
+Purpose:    Auto Delegate Inbasket User  
+
+Called on:  Post method of Workflow process Lc State.
+			
+Sl.No       Change Description                	        Created by/Modified by          Created/Modified Date
+1           Draft                                       Poonam Shendge                  30 August 2018
+
+2           Changes made as suggested                   Premal Bhagat                   22 October 2018
+            
+            
+-------------------------------------------------------------------------------------------------------------- 
+*/
+
+Innovator inno = getInnovator();
+// get type 
+string type = this.getType();
+string workflowprcName = this.getProperty("name");
+
+if(type =="Activity")
+{   
+//get Activity Id
+string activityId = this.getID();
+string delegatedIdentity = "";
+string delegatedUserId = "";
+string identityId = "";
+string newIdentityId ="";
+string sequence ="";
+string groupIdentityId = "";
+string newIdentityIds = "";
+bool flag = false;
+
+string is_auto = this.getProperty("is_auto");
+    if(is_auto !="1")
+    {
+        string activityAml ="<AML>"+
+                        "<Item type='Activity' action='get' select='id,name' where=\"[Activity].id='"+activityId+"'\">"+
+                          "<Relationships>"+
+        	                 "<Item type='Activity Assignment' action='get' select='related_id'>"+
+                        	   	 "<related_id>"+
+                                   "<Item type='Identity' action='get'>"+
+                                   "</Item>"+
+                                 "</related_id>"+
+                            "</Item>"+
+                        	 "</Relationships>"+
+                      "</Item>"+
+                    "</AML>";	
+                Item activityItm = inno.applyAML(activityAml);
+                if (activityItm.isError())
+        		{
+        			throw new Exception("Error while getting Activity assignment Identity, " + activityItm.getErrorString());
+        		}
+        		string activityName = activityItm.getItemByIndex(0).getProperty("name");
+                Item activityAssignmentCollection = activityItm.getItemsByXPath("//Item[@type='Activity Assignment']");
+             
+                if(activityAssignmentCollection.getItemCount() > 0)
+                {
+                	Item identityItem = activityAssignmentCollection.getItemsByXPath("//Item[@type ='Identity']");
+                	int identityCounts = identityItem.getItemCount();
+               
+                	for(int m=0; m<identityCounts ; m++ )
+                	{
+                	Item identityIdx = identityItem.getItemByIndex(m);
+                	
+                    identityId = identityIdx.getProperty("id");
+                    string userAlias = identityIdx.getProperty("is_alias");
+                    if(userAlias == "1")
+                    {
+						//Aml to get source_id from particular identityId of Identity 
+                        string aliasQry = "<AML>"+
+                                            "<Item type='Alias' action='get' select='source_id,related_id'>"+
+                                                "<related_id>"+identityId+"</related_id>"+
+                                            "</Item>"+
+                                      "</AML>";
+                        Item usrWithIdentity = inno.applyAML(aliasQry);
+                        if (usrWithIdentity.isError())
+                        {
+                          throw new Exception("Error while getting User Identity ID, " + usrWithIdentity.getErrorString());
+                        }                    
+                        string ActivityIdentity = usrWithIdentity.getItemByIndex(0).getProperty("source_id"); 
+                        //Aml to get Delegated User
+                        string userAmlQry = "<AML>"+
+                                            "<Item type='User' action='get' id='"+ActivityIdentity+"' select='id,keyed_name,em_delgation_status,em_auto_assign_to_user'>"+
+                                             "</Item>"+
+                                        "</AML>";
+                        Item userWithdelgation = inno.applyAML(userAmlQry);
+                        if (userWithdelgation.isError())
+                		{
+                			throw new Exception("Error while getting Delegated User , " + userWithdelgation.getErrorString());
+                		}
+                		
+                		string delegatedStatus = userWithdelgation.getItemByIndex(0).getProperty("em_delgation_status");
+                        if (delegatedStatus == "ON")
+                        {
+                             //delegatedStatus.disable = false;
+                             delegatedUserId = userWithdelgation.getItemByIndex(0).getProperty("em_auto_assign_to_user");
+                             //Aml to get Delegated users Identity Id
+                             string alisQry = "<AML>"+
+                                                 "<Item type='Alias' action='get' select='related_id'>"+
+                                                    "<source_id>"+delegatedUserId+"</source_id>"+
+                                                "</Item>"+
+                                            "</AML>";
+                              Item usrWithDelegatedIdentity = inno.applyAML(alisQry);
+                              if (usrWithDelegatedIdentity.isError())
+                    		  {
+                    		   	throw new Exception("Error while getting User Identity ID, " + usrWithDelegatedIdentity.getErrorString());
+                    		  }
+                              delegatedIdentity = usrWithDelegatedIdentity.getItemByIndex(0).getProperty("related_id");
+                              //Aml to merger Exsisting Assignment Identity with Delegated User Identity 
+							  
+                             Item _adAssgn = inno.newItem("Activity Assignment", "merge");
+                    		_adAssgn.setAttribute("where", "source_id='" + activityId + "' and related_id='" + identityId + "'");
+            	    		_adAssgn.setProperty("source_id", activityId);
+                    		_adAssgn.setProperty("voting_weight", "100");
+                    		_adAssgn.setProperty("related_id", delegatedIdentity);
+                      		Item adAssgn = _adAssgn.apply();
+                    		if (adAssgn.isError())
+                    		{
+                    			throw new Exception("Error while adding new assignments, " + adAssgn.getErrorString());
+                    		}
+                        }
+                      }
+                      else
+                      {
+						  string amlquery = "<AML>"+
+											"<Item type='Variable' action='get' select='value'>"+
+											"<name>em_groupIdentity_variable</name>"+
+											"</Item>"+
+											"</AML>";
+						Item variableResult = inno.applyAML(amlquery);
+						string variableValue = variableResult.getItemByIndex(0).getProperty("value");
+						if(variableValue == "True")	
+					    {
+					       
+						  //Query to get group Identity Id.
+                           string AliasItemQuery = "<AML>"+
+                                                     "<Item type='Identity' action='get' select='id'>"+ 
+                                                       "<id>"+identityId+"</id>"+
+                                                        "<Relationships>"+
+                                                         "<Item type='Member' action='get' select='related_id'>"+
+                                                          "<related_id>"+
+                                                           "<Item type='Identity' action='get' select='id'>"+
+                                                           "</Item>"+
+                                                          "</related_id>"+
+                                                         "</Item>"+
+                                                        "</Relationships>"+
+                                                     "</Item>"+
+                                                    "</AML>";
+                            Item identityWithAlias = inno.applyAML(AliasItemQuery);
+                            Item relatedIdentityResult= identityWithAlias.getItemsByXPath("//related_id/Item[@type = 'Identity']");
+                            
+                            int identityCount = relatedIdentityResult.getItemCount();
+							
+							List<string> IdentList = new List<string>();
+							List<string> DelegatedIdetityList = new List<string>();
+                            for(int j=0 ; j<identityCount ; j++)
+                            {
+                                
+                                Item itmIndex = relatedIdentityResult.getItemByIndex(j);
+                                groupIdentityId = itmIndex.getProperty("id");
+                                
+                                string aliasQry = "<AML>"+
+                                                    "<Item type='Alias' action='get' select='source_id,related_id'>"+
+                                                      "<related_id>"+groupIdentityId+"</related_id>"+
+                                                    "</Item>"+
+                                                  "</AML>";
+                                Item usrWithIdentity = inno.applyAML(aliasQry);
+                                
+                                if (usrWithIdentity.isError())
+                                {
+                                  throw new Exception("Error while getting User Identity ID, " + usrWithIdentity.getErrorString());
+                                }   
+                           
+                                string ActivityIdentity = usrWithIdentity.getItemByIndex(0).getProperty("source_id"); 
+                                //Aml to get Delegated User
+                                string amlStr = "<AML>"+
+                                                    "<Item type='User' action='get' id='"+ActivityIdentity+"' select='id,keyed_name,em_delgation_status,em_auto_assign_to_user'>"+
+                                                     "</Item>"+
+                                                 "</AML>";
+                                Item userWithdelgation = inno.applyAML(amlStr);
+                                
+                                if (userWithdelgation.isError())
+                        		{
+                        			throw new Exception("Error while getting delegated User , " + userWithdelgation.getErrorString());
+                    		    }
+                    		
+                        		string delegatedStatus = userWithdelgation.getItemByIndex(0).getProperty("em_delgation_status");
+                      
+                        		if((delegatedStatus == "OFF")||(String.IsNullOrEmpty(delegatedStatus)))
+                        		{	
+							        //Query to get not delegated users from group Identity.
+							        string delegatedStatusOffId = userWithdelgation.getItemByIndex(0).getProperty("id");
+							        
+                        		    string DelegateOfaliasQry = "<AML>"+
+																"<Item type='Alias' action='get' select='source_id,related_id'>"+
+																	"<source_id>"+delegatedStatusOffId+"</source_id>"+
+																"</Item>"+
+															 "</AML>";
+                                Item usrWithDelegationOffIdentity = inno.applyAML(DelegateOfaliasQry);
+                                if (usrWithDelegationOffIdentity.isError())
+                                {
+                                  throw new Exception("Error while getting User Identity ID, " + usrWithDelegationOffIdentity.getErrorString());
+                                }   
+								
+                                 //list to get all not delegated users Identity
+                                 IdentList.Add(usrWithDelegationOffIdentity.getItemByIndex(0).getProperty("related_id")); 
+                        		   
+                        		}
+                                else if (delegatedStatus == "ON")
+                                {
+                                     delegatedUserId = userWithdelgation.getItemByIndex(0).getProperty("em_auto_assign_to_user");
+                                     
+                                     //Aml to get Routed users Identity Id
+                                     string alisQry = "<AML>"+
+                                                         "<Item type='Alias' action='get' select='related_id'>"+
+                                                            "<source_id>"+delegatedUserId+"</source_id>"+
+                                                        "</Item>"+
+                                                    "</AML>";
+                                      Item usrWithDelegatedIdentity = inno.applyAML(alisQry);
+                                      if (usrWithDelegatedIdentity.isError())
+                            		  {
+                            		   	throw new Exception("Error while getting User Identity ID, " + usrWithDelegatedIdentity.getErrorString());
+                            		  }
+									//list to get all Routed users Identity
+                                    DelegatedIdetityList.Add(usrWithDelegatedIdentity.getItemByIndex(0).getProperty("related_id"));
+									//flag condition 
+                                    flag = true;
+                                      
+                                }
+                                
+                            }
+                           string singleDelegatedidentity = "";
+                           string multipleDelegatedIdentity = "";
+						   for (int l = 0; l < DelegatedIdetityList.Count; l++)
+						   {  
+								if (l == 0)
+								{
+									//this will give you element at zero th index.
+								   singleDelegatedidentity = DelegatedIdetityList.ElementAt(l);
+								}
+								else
+								{
+									//values other than zero th index.
+									Console.WriteLine(DelegatedIdetityList.ElementAt(l));
+									multipleDelegatedIdentity = multipleDelegatedIdentity + "," + DelegatedIdetityList.ElementAt(l);
+									
+								}
+              
+                            }
+                           //if Flag is True then create new group Identity.
+							if(flag == true)
+							{
+                                sequence =inno.getNextSequence("em_sequence_for_workflow");
+								//query to create new group Identity
+								string addIdentityAmlqry = "<AML>"+
+															 "<Item type='Member' action='add'>"+
+															   "<source_id>"+
+																 "<Item type='Identity' action='add'>"+
+																   "<name>"+activityName+"_"+sequence+"</name>"+
+																 "</Item>"+
+															   "</source_id>"+
+															   "<related_id>"+
+																 "<Item type='Identity' action='get'>"+
+																   "<id>"+singleDelegatedidentity+"</id>"+
+																 "</Item>"+
+															   "</related_id>"+   
+															  "</Item>"+
+															"</AML>";
+					     		 Item addIdentityResult = inno.applyAML(addIdentityAmlqry);
+								if (addIdentityResult.isError())
+								{
+								  throw new Exception("Error while Creating new group Identity , " + addIdentityResult.getErrorString());
+								}  
+								if(addIdentityResult.getItemCount() > 0)
+								{
+								  newIdentityIds = addIdentityResult.getItemByIndex(0).getProperty("source_id");
+								
+								}  
+								string stringIdentity = string.Join(",", IdentList.ToArray());
+								string newGroupIdentity = "";
+							    newGroupIdentity = stringIdentity+multipleDelegatedIdentity;
+								if(string.IsNullOrEmpty(newGroupIdentity))
+							     {
+									 Item _adAssgn = inno.newItem("Activity Assignment", "merge");
+									_adAssgn.setAttribute("where", "source_id='" + activityId + "' and related_id='" + identityId + "'");
+									_adAssgn.setProperty("source_id", activityId);
+									_adAssgn.setProperty("voting_weight", "100");
+									_adAssgn.setProperty("related_id", newIdentityIds);
+									Item adAssgn = _adAssgn.apply();
+									if (adAssgn.isError())
+									{
+										throw new Exception("Error while adding new assignments, " + adAssgn.getErrorString());
+									}
+									
+								 }
+							 else
+							 {
+								     
+								 string[] strNewIdentityArr = newGroupIdentity.Split(',');
+								 StringBuilder sb = new StringBuilder();
+								 for (int k = 0; k < strNewIdentityArr.Length; ++k)
+								 {   
+									string newIdentityList = strNewIdentityArr[k];
+									//query to add Identities to newly Created Group identity
+									sb.Append("<Item type='Member' action='add'>");
+									sb.Append("<source_id>");
+									sb.Append("<Item type='Identity' action='get'>");
+									sb.Append("<name>");
+									sb.Append(activityName+"_"+sequence);
+									sb.Append("</name>");
+									sb.Append("</Item>");
+									sb.Append("</source_id>");
+									sb.Append("<related_id>");
+									sb.Append("<Item type='Identity' action='get'>");
+									sb.Append("<id>");
+									sb.Append(newIdentityList);
+									sb.Append("</id>");
+									sb.Append("</Item>");
+									sb.Append("</related_id>");
+									sb.Append("</Item>");
+									
+								 }	 
+								 Item Itm = inno.applyAML("<AML>"+sb.ToString()+"</AML>");
+								 if (Itm.isError())
+								 {
+								   throw new Exception("Error Adding new Identity to group Identity, " + Itm.getErrorString());
+								 }
+								if(Itm.getItemCount() > 0)
+								{
+								  newIdentityId = Itm.getItemByIndex(0).getProperty("source_id");
+								
+							    }    
+							   //Query To merge new Identity group with previous Identity group
+								Item _adAssgn = inno.newItem("Activity Assignment", "merge");
+								_adAssgn.setAttribute("where", "source_id='" + activityId + "' and related_id='" + identityId + "'");
+								_adAssgn.setProperty("source_id", activityId);
+								_adAssgn.setProperty("voting_weight", "100");
+								_adAssgn.setProperty("related_id", newIdentityId);
+								Item adAssgn = _adAssgn.apply();
+								if (adAssgn.isError())
+								{
+									throw new Exception("Error while adding new assignments, " + adAssgn.getErrorString());
+								}
+								 
+							  }
+								
+						    }
+                     
+					    }
+			
+				  }
+               }
+            }
+   
+    }
+}
+    return this;]]></method_code>
+  <method_type>C#</method_type>
+  <name>em_manage_delegation_onactivate</name>
+ </Item>
+</AML>

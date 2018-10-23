@@ -25,7 +25,7 @@
       <label xml:lang="en">Re-Routing</label>
       <label_position>top</label_position>
       <list_no_blank>0</list_no_blank>
-      <propertytype_id keyed_name="em_auto_routing_status" type="Property">1ADC2AC9D579448EB453FBE8CAAA0699</propertytype_id>
+      <propertytype_id keyed_name="em_delgation_status" type="Property">1ADC2AC9D579448EB453FBE8CAAA0699</propertytype_id>
       <sort_order>1920</sort_order>
       <source_id keyed_name="9602C30E4D724BBAAB5260666EC82316" type="Body">9602C30E4D724BBAAB5260666EC82316</source_id>
       <tab_index>4864</tab_index>
@@ -560,6 +560,7 @@
       <name>Load Viewer</name>
      </Item>
     </related_id>
+    <sort_order>128</sort_order>
     <source_id keyed_name="User" type="Form">F163110C6FD54096A2D59097596ED890</source_id>
    </Item>
   </Relationships>

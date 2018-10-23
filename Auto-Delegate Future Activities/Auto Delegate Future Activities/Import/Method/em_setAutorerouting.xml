@@ -5,7 +5,7 @@
 
  var formID = top.aras.getFormId("em_global_config");
     var param = new Object();
-    param.title  = "Set AutoRerouting";
+    param.title  = "Delegate Future Workflow Tasks";
     //Creating Temp object for proper handle on form
     var tmp = inno.newItem("tmp", "tmp");
     var tmpItemId = inno.getNewID();
@@ -39,6 +39,6 @@
 
 });]]></method_code>
   <method_type>JavaScript</method_type>
-  <name>em_setAutorerouting</name>
+  <name>em_setAutoDelegation</name>
  </Item>
 </AML>
