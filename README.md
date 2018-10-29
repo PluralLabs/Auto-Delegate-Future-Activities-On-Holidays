@@ -22,9 +22,9 @@ Google Chrome 69
 #### **Pre-requisites:**
 
  1. Aras Innovator installed (version 11.0 SP12)
- 2.  Auto Rerouting Package
- 3.  Before importing package delete **Form** of User Itemtype using root/innovator Login
- 4.  While importing login with root/innovator into importing tool.
+ 2. Auto Delegate Future Workflow Tasks Package
+ 3. Before importing package delete **Form** of User Itemtype using root/innovator Login
+ 4. While importing login with root/innovator into importing tool.
  5. After importing package add **Form** of User Itemtype using root/innovator Login
 
 #### **Installation Steps:**
@@ -45,11 +45,13 @@ Optional: Enter a description in the Description field.
 
 1. Log in to Aras.
 2. Navigate to User Itemtype in TOC Pane
-3. Select User > Go to Action > Set Auto Rerouting >
-4. You will get the Global Config Form. Set Re-Route status as **ON** and select the user to whom you want to assign the workflow activities when the current logged in user is going for a leave in **Auto Assign to the**
-5. Then view logged in User Item and check the Re-Route status as **ON** and **auto assign to** will be the new user.
-6. On a Workflow Map Activity if the assigned users Re-Routing status is On then the user of current activity gets routed to newly auto assigned user.
-7. In the case of group Identity, if the group identity contains the user whose routing is ON, there is a variable named **em_groupIdentity_variable** if the value of the variable is set as **True** then the new group identity is created with the Re-Routed User else if the value is set as **False** above functionality will not work for this case. By Default, it is set as **True**.
+3. Select User > Go to Action > Delegate Future Workflow Tasks >
+4. You will get the Global Config Form. Set Delegation Status as **ON** and select the user to whom you want to assign the workflow activities when the current logged in user is going for a leave in **Auto Assign to the**
+5. Then view logged in User Item and check the Set Delegation Status as **ON** and **auto assign to** will be the new user.
+6. On a Workflow Map Activity if the assigned users delegation status is On then the user of current activity gets delegated to newly auto assigned user.
+7. By Default, variable named **em_groupIdentity_variable** is set as **False**. So that, this functionality works for Identity Alias(Individual Users)
+8. In the case of group Identity, if the group identity contains the user whose delegation status is ON, value of variable **em_groupIdentity_variable** can be set to **True** then new group identity will be created with the Delegated User in it.
+
 
 #### **Contributing**
 
