@@ -50,7 +50,7 @@ Optional: Enter a description in the Description field.
 5. Then view logged in User Item and check the Set Delegation Status as **ON** and **auto assign to** will be the new user.
 6. On a Workflow Map Activity if the assigned users delegation status is On then the user of current activity gets delegated to newly auto assigned user.
 7. By Default, variable named **em_groupIdentity_variable** is set as **False**. So that, this functionality works for Identity Alias(Individual Users)
-8. In the case of group Identity, if the group identity contains the user whose delegation status is ON, value of variable **em_groupIdentity_variable** can be set to **True** then the new group identity is created with the Delegated User in it.
+8. In the case of group Identity, if the group identity contains the user whose delegation status is ON, value of variable **em_groupIdentity_variable** can be set to **True** then new group identity will be created with the Delegated User in it.
 
 
 #### **Contributing**
